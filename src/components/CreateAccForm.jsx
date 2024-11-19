@@ -1,8 +1,8 @@
 import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { addAccount, setAccountDetails } from "../slice/accountSlice";
-import { create_Acc_Form_ValidationSchema } from "../utils/validationSchema";
 import { createHDNodeWallet, generateMnemonic } from "../utils/account";
+import { create_Acc_Form_ValidationSchema } from "../utils/validationSchema";
 
 export const CreateAccForm = ({ setShowForm }) => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ export const CreateAccForm = ({ setShowForm }) => {
       password: "",
       confirmPassword: "",
     },
-    // validationSchema: create_Acc_Form_ValidationSchema,
+    validationSchema: create_Acc_Form_ValidationSchema,
     onSubmit: onHandleSubmit,
   });
 
@@ -27,16 +27,24 @@ export const CreateAccForm = ({ setShowForm }) => {
     if (values.password !== values.confirmPassword) return;
     const mnemonics = await generateMnemonic();
     const mnemonicPhrase = mnemonics.phrase;
-    // const mnemonicPhrase =
-    //   "absent segment usual pulp secret prepare skirt dial impose unlock account deny";
+
     dispatch(
       setAccountDetails({
         mnemonics: mnemonicPhrase,
         password: values.password,
       })
     );
+
     const wallet = await createHDNodeWallet(mnemonicPhrase, 0);
-    dispatch(addAccount(wallet));
+    dispatch(
+      addAccount({
+        address: wallet.address,
+        chainCode: wallet.chainCode,
+        fingerprint: wallet.fingerprint,
+        path: wallet.path,
+        publicKey: wallet.publicKey,
+      })
+    );
     resetForm();
     setShowForm(false);
   }

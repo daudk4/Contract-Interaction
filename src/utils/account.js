@@ -1,9 +1,21 @@
 import { ethers } from "ethers";
 
+// export async function initializeProvider() {
+//   try {
+//     const provider = new ethers.JsonRpcProvider(
+//       "http://182.176.169.225:13000/"
+//     );
+//     return provider;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
+
 export async function initializeProvider() {
   let provider;
   if (window.ethereum == null) {
-    console.log("MetaMask not installed");
+    console.log("MetaMask not installed; using read-only defaults");
+    provider = ethers.getDefaultProvider();
   } else {
     provider = new ethers.BrowserProvider(window.ethereum);
     return provider;
